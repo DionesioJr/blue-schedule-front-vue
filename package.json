@@ -1,0 +1,54 @@
+{
+  "name": "blue-schedule",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "prepare": "husky",
+    "lint": "eslint . --ext .vue,.js,.ts --fix",
+    "lint:check": "eslint . --ext .vue,.js,.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@primeuix/themes": "^1.2.3",
+    "@tailwindcss/vite": "^4.1.12",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.3.7",
+    "tailwindcss": "^4.1.12",
+    "tailwindcss-primeui": "^0.6.1",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-vue": "^10.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "prettier": "^3.6.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.2",
+    "vue-tsc": "^3.0.5"
+  },
+  "lint-staged": {
+    "*.{vue,js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,html,md,json}": [
+      "prettier --write"
+    ]
+  }
+}

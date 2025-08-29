@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx husky init:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run format:*)",
+      "WebFetch(domain:bluetechnology.com.br)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
