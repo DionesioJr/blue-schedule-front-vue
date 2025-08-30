@@ -5,6 +5,9 @@ import router from './router'
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import { definePreset } from '@primeuix/themes'
+import ConfirmationService from 'primevue/confirmationservice'
+import ToastService from 'primevue/toastservice'
+import Tooltip from 'primevue/tooltip'
 
 const MyPreset = definePreset(Aura, {
   semantic: {
@@ -37,5 +40,8 @@ app.use(PrimeVue, {
     }
   }
 })
+app.use(ConfirmationService)
+app.use(ToastService)
+app.directive('tooltip', Tooltip)
 
 app.mount('#app')

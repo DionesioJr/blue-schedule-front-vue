@@ -6,7 +6,8 @@
           Funcionalidades Premium
         </h2>
         <p class="text-xl text-surface-600 max-w-2xl mx-auto">
-          Todas as ferramentas que você precisa para gerenciar seus contatos de forma profissional
+          Todas as ferramentas que você precisa para gerenciar seus contatos de
+          forma profissional
         </p>
       </div>
 

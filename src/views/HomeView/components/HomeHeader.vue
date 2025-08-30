@@ -1,15 +1,19 @@
 <template>
-  <header class="fixed w-full top-0 left-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-md">
+  <header
+    class="fixed w-full top-0 left-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20 shadow-md"
+  >
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="flex justify-between items-center py-4">
         <!-- Logo -->
         <div class="flex items-center">
-          <img 
-            src="/image/Blue.png" 
-            alt="Blue Technology" 
+          <img
+            src="/image/Blue.png"
+            alt="Blue Technology"
             class="h-10 w-auto mr-3 transform hover:scale-105 transition-transform duration-300"
+          />
+          <span class="text-xl font-semibold text-secundary tracking-tight"
+            >Blue Agenda</span
           >
-          <span class="text-xl font-semibold text-secundary tracking-tight">Blue Agenda</span>
         </div>
 
         <!-- Navegação Desktop -->
@@ -61,6 +65,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

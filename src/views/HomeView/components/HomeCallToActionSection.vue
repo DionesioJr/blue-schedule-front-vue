@@ -5,7 +5,8 @@
         Pronto para Revolucionar sua Gestão de Contatos?
       </h2>
       <p class="text-xl text-primary-100 mb-10 max-w-2xl mx-auto">
-        Junte-se a milhares de profissionais que já transformaram sua produtividade com o Blue Agenda
+        Junte-se a milhares de profissionais que já transformaram sua
+        produtividade com o Blue Agenda
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <router-link
@@ -26,5 +27,4 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>

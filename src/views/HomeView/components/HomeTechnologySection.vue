@@ -6,7 +6,8 @@
           Tecnologia de Ponta
         </h2>
         <p class="text-xl text-surface-600 max-w-2xl mx-auto">
-          Desenvolvido com as melhores tecnologias do mercado para garantir performance e confiabilidade
+          Desenvolvido com as melhores tecnologias do mercado para garantir
+          performance e confiabilidade
         </p>
       </div>
 
@@ -17,21 +18,21 @@
           title="Vue 3"
           description="Framework Progressivo"
         />
-        
+
         <TechCard
           icon="pi-verified"
           iconColor="from-blue-500 to-blue-600"
           title="TypeScript"
           description="Tipagem Segura"
         />
-        
+
         <TechCard
           icon="pi-palette"
           iconColor="from-purple-500 to-purple-600"
           title="PrimeVue"
           description="Componentes UI"
         />
-        
+
         <TechCard
           icon="pi-mobile"
           iconColor="from-teal-500 to-teal-600"
