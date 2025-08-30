@@ -14,28 +14,28 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
         <TechCard
           icon="pi-code"
-          iconColor="from-green-500 to-green-600"
+          icon-color="from-green-500 to-green-600"
           title="Vue 3"
           description="Framework Progressivo"
         />
 
         <TechCard
           icon="pi-verified"
-          iconColor="from-blue-500 to-blue-600"
+          icon-color="from-blue-500 to-blue-600"
           title="TypeScript"
           description="Tipagem Segura"
         />
 
         <TechCard
           icon="pi-palette"
-          iconColor="from-purple-500 to-purple-600"
+          icon-color="from-purple-500 to-purple-600"
           title="PrimeVue"
           description="Componentes UI"
         />
 
         <TechCard
           icon="pi-mobile"
-          iconColor="from-teal-500 to-teal-600"
+          icon-color="from-teal-500 to-teal-600"
           title="Tailwind CSS"
           description="Design System"
         />

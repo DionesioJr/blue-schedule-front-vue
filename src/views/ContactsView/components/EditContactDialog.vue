@@ -21,16 +21,7 @@
 import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import ContactForm from './ContactForm.vue'
-
-interface Contact {
-  id: number
-  name: string
-  email: string
-  phone: string
-  photo: string | null
-  isFavorite: boolean
-  isActive: boolean
-}
+import type { Contact, ContactCreateDto } from '@/types'
 
 interface Props {
   visible: boolean
@@ -46,7 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  submit: [contactData: Contact]
+  submit: [contactData: ContactCreateDto]
   delete: [contact: Contact]
 }>()
 
@@ -57,7 +48,7 @@ const isVisible = computed({
 
 const isEditing = computed(() => !!props.contact?.id)
 
-const handleSubmit = (contactData: Contact) => {
+const handleSubmit = (contactData: ContactCreateDto) => {
   emit('submit', contactData)
 }
 

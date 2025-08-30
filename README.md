@@ -1,8 +1,8 @@
-# Blue Schedule - Contact Management Application
+# Blue Contacts - Contact Management Application
 
 ## Overview
 
-Blue Schedule is a modern contact management application built with Vue 3, TypeScript, and Vite. It provides a complete contact management solution with advanced features like favorites, photo uploads, soft delete functionality, and user settings management.
+Blue Contacts is a modern contact management application built with Vue 3, TypeScript, and Vite. It provides a complete contact management solution with advanced features like favorites, photo uploads, soft delete functionality, user settings management, and intelligent API integration with caching strategies.
 
 ## Table of Contents
 
@@ -47,9 +47,12 @@ Blue Schedule is a modern contact management application built with Vue 3, TypeS
 - PrimeVue UI components with Tailwind CSS integration
 - Global state management with Pinia
 - SPA navigation with Vue Router
-- Backend communication via Axios
+- Backend communication via Axios with interceptors
+- Smart caching strategy for performance optimization
+- Automatic token management and refresh
 - Responsive and user-friendly layout
 - Visual feedback (toasts, confirmations)
+- Type-safe API integration with complete CRUD operations
 
 ## Tech Stack
 
@@ -58,9 +61,9 @@ Blue Schedule is a modern contact management application built with Vue 3, TypeS
 - **Vite:** Fast build tool and development server
 - **PrimeVue:** Rich UI component library integrated with Tailwind CSS
 - **Tailwind CSS:** Utility-first CSS framework for custom styling and PrimeVue theming
-- **Pinia:** Vue.js state management library (planned)
-- **Vue Router:** Official router for Vue.js applications (planned)
-- **Axios:** HTTP client for API communication (planned)
+- **Pinia:** Vue.js state management library with smart caching
+- **Vue Router:** Official router for Vue.js applications
+- **Axios:** HTTP client with automatic token management and interceptors
 - **Vitest:** Fast unit testing framework (planned)
 
 ## Documentation
@@ -70,6 +73,7 @@ Detailed documentation is available in the `docs/` directory:
 - **[Requirements](docs/requirements.md)** - Complete functional and non-functional requirements
 - **[Release Plan](docs/release-plan.md)** - Development roadmap and delivery planning
 - **[Git Commit Guidelines](docs/git-commit-guidelines.md)** - Commit standards and best practices
+- **[API Implementation](docs/api-implementation.md)** - Complete services and stores documentation
 
 ## Local Development
 
@@ -204,15 +208,16 @@ blue-schedule/
 
 This frontend application connects to external REST APIs. If needed, you can create a `.env.local` file for environment-specific configuration:
 
-### Optional `.env.local` (for API endpoints)
+### Required `.env.local` (for API endpoints)
 
 ```env
 # Development
-VITE_APP_TITLE=Blue Schedule
-VITE_API_BASE_URL=http://localhost:3000/api
+VITE_APP_NAME="Blue Contacts"
+VITE_APP_VERSION=1.0.0
+VITE_API_BASE_URL=http://localhost:5000
 
 # Production API (when available)
-# VITE_API_BASE_URL=https://your-api-domain.com/api
+# VITE_API_BASE_URL=https://your-api-domain.com
 ```
 
 > - Environment variables are optional since this is a frontend-only application
@@ -281,9 +286,9 @@ This project uses Git tags for version management following semantic versioning:
 
 ```
 v0.1.0   Initial setup - Vue 3 + TypeScript + PrimeVue + Tailwind + Husky
-v0.2.0   Contact CRUD implementation (planned)
-v0.3.0   User settings and photo upload (planned)
-v0.4.0   Favorites and soft delete (planned)
+v0.2.0   API integration - Services, Stores, Types, and complete backend communication
+v0.3.0   Contact CRUD with smart caching and optimistic updates
+v0.4.0   User settings, photo upload, and authentication flow (planned)
 v1.0.0   First stable release (planned)
 ```
 

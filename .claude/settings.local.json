@@ -5,7 +5,9 @@
       "Bash(npx husky init:*)",
       "Bash(npm run lint:*)",
       "Bash(npm run format:*)",
-      "WebFetch(domain:bluetechnology.com.br)"
+      "WebFetch(domain:bluetechnology.com.br)",
+      "Bash(npm run build)",
+      "Bash(npm run type-check:*)"
     ],
     "deny": [],
     "ask": []

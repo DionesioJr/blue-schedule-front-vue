@@ -4,22 +4,22 @@
     :loading="loading"
     :paginator="true"
     :rows="10"
-    :totalRecords="totalRecords"
-    :rowsPerPageOptions="[5, 10, 25, 50]"
-    paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-    currentPageReportTemplate="{first} - {last} de {totalRecords} contatos"
+    :total-records="totalRecords"
+    :rows-per-page-options="[5, 10, 25, 50]"
+    paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+    current-page-report-template="{first} - {last} de {totalRecords} contatos"
     class="p-datatable-striped"
     :pt="{
       table: { style: 'margin-bottom: 1.5rem' },
       paginator: {
-        style:
-          'padding-top: 1rem; border-top: 1px solid var(--surface-border)'
+        style: 'padding-top: 1rem; border-top: 1px solid var(--surface-border)'
       },
-      headerCell: { 
-        style: 'font-weight: 500; color: var(--text-color); background: var(--surface-50)'
+      headerCell: {
+        style:
+          'font-weight: 500; color: var(--text-color); background: var(--surface-50)'
       }
     }"
-    stripedRows
+    striped-rows
     @page="$emit('page', $event)"
     @sort="$emit('sort', $event)"
   >
@@ -35,7 +35,7 @@
     <Column field="photo" header="Foto" class="w-20">
       <template #body="{ data }">
         <Avatar
-          :image="data.photo"
+          :image="data.photo || undefined"
           :label="data.photo ? '' : getInitials(data.name)"
           class="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity"
           shape="circle"
@@ -91,11 +91,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const emit = defineEmits([
-  'edit', 
-  'page', 
-  'sort'
-])
+const emit = defineEmits(['edit', 'page', 'sort'])
 
 const totalRecords = computed(() => props.contacts.length)
 

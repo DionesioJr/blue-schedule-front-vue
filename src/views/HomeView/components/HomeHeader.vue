@@ -31,10 +31,10 @@
 
         <!-- Ações -->
         <div class="hidden md:flex items-center space-x-4">
-          <button @click="login" class="btn-secondary">
+          <button class="btn-secondary" @click="login">
             <i class="pi pi-sign-in mr-2"></i>Login
           </button>
-          <button @click="register" class="btn-primary">
+          <button class="btn-primary" @click="register">
             <i class="pi pi-user-plus mr-2"></i>Registrar
           </button>
         </div>

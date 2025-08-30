@@ -24,6 +24,36 @@ export default [
         parser: parserTypeScript,
         ecmaVersion: 2022,
         sourceType: 'module'
+      },
+      globals: {
+        // Browser globals
+        window: 'readonly',
+        document: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        alert: 'readonly',
+        confirm: 'readonly',
+        prompt: 'readonly',
+
+        // Web APIs
+        fetch: 'readonly',
+        FormData: 'readonly',
+        FileReader: 'readonly',
+        File: 'readonly',
+        Blob: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        Event: 'readonly',
+        HTMLElement: 'readonly',
+
+        // Encoding/decoding
+        atob: 'readonly',
+        btoa: 'readonly'
       }
     },
     rules: {

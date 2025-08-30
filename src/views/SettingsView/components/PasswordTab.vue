@@ -19,8 +19,8 @@
             />
             <button
               type="button"
-              @click="toggleCurrentPasswordVisibility"
               class="absolute inset-y-0 right-0 pr-3 flex items-center text-surface-400 hover:text-surface-600 transition-colors"
+              @click="toggleCurrentPasswordVisibility"
             >
               <i
                 :class="showCurrentPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
@@ -51,8 +51,8 @@
               />
               <button
                 type="button"
-                @click="toggleNewPasswordVisibility"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-surface-400 hover:text-surface-600 transition-colors"
+                @click="toggleNewPasswordVisibility"
               >
                 <i
                   :class="showNewPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
@@ -82,8 +82,8 @@
               />
               <button
                 type="button"
-                @click="toggleConfirmPasswordVisibility"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-surface-400 hover:text-surface-600 transition-colors"
+                @click="toggleConfirmPasswordVisibility"
               >
                 <i
                   :class="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"

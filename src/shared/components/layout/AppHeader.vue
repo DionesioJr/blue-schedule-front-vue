@@ -21,12 +21,12 @@
         <!-- User Menu -->
         <div class="relative">
           <div
-            @click="toggleUserMenu"
             class="p-0 border-0 bg-transparent hover:bg-surface-50 rounded-full cursor-pointer"
             aria-label="Menu do usuário"
+            @click="toggleUserMenu"
           >
             <Avatar
-              :image="currentUser.photo"
+              :image="currentUser.photo || undefined"
               :label="currentUser.photo ? '' : getUserInitials()"
               class="w-12 h-12 text-sm"
               size="normal"
@@ -43,7 +43,7 @@
             <div class="px-4 py-3 border-b border-surface-200">
               <div class="flex items-center space-x-3">
                 <Avatar
-                  :image="currentUser.photo"
+                  :image="currentUser.photo || undefined"
                   :label="currentUser.photo ? '' : getUserInitials()"
                   class="w-10 h-10 text-sm"
                   shape="circle"
@@ -71,8 +71,8 @@
               </router-link>
 
               <button
-                @click="handleLogout"
                 class="w-full flex items-center space-x-3 px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors duration-200"
+                @click="handleLogout"
               >
                 <i class="pi pi-sign-out text-surface-600"></i>
                 <span>Sair do Sistema</span>
@@ -89,7 +89,6 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
-import Button from 'primevue/button'
 import Avatar from 'primevue/avatar'
 
 const router = useRouter()

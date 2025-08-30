@@ -1,10 +1,10 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-5">
+  <form class="space-y-5" @submit.prevent="handleSubmit">
     <!-- Profile Photo -->
     <div class="flex flex-col items-center mb-6">
       <div class="relative mb-4">
         <Avatar
-          :image="formData.photo"
+          :image="formData.photo || undefined"
           :label="formData.photo ? '' : getInitials(formData.name || 'N')"
           class="w-20 h-20 text-lg"
           size="xlarge"
@@ -30,8 +30,8 @@
           severity="secondary"
           size="small"
           class="text-xs"
-          @click="removePhoto"
           :disabled="!formData.photo"
+          @click="removePhoto"
         />
       </div>
     </div>
@@ -90,9 +90,9 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex items-center space-x-3">
         <Checkbox
-          v-model="formData.isFavorite"
+          v-model="formData.favorite"
           :binary="true"
-          inputId="favorite"
+          input-id="favorite"
         />
         <label
           for="favorite"
@@ -103,7 +103,11 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <Checkbox v-model="formData.isActive" :binary="true" inputId="active" />
+        <Checkbox
+          v-model="formData.isActive"
+          :binary="true"
+          input-id="active"
+        />
         <label
           for="active"
           class="text-sm font-medium text-surface-700 cursor-pointer"
@@ -163,9 +167,9 @@
         <FileUpload
           mode="basic"
           name="photo"
-          :maxFileSize="1000000"
+          :max-file-size="1000000"
           accept="image/*"
-          :chooseLabel="'Selecionar Foto'"
+          :choose-label="'Selecionar Foto'"
           @select="onPhotoSelect"
           @error="onPhotoError"
         />
@@ -197,16 +201,8 @@ import Avatar from 'primevue/avatar'
 import Dialog from 'primevue/dialog'
 import FileUpload from 'primevue/fileupload'
 import DeleteContactDialog from './DeleteContactDialog.vue'
-
-interface Contact {
-  id?: number
-  name: string
-  email: string
-  phone: string
-  photo: string | null
-  isFavorite: boolean
-  isActive: boolean
-}
+import type { Contact, ContactCreateDto, ContactForm } from '@/types'
+import { contactToForm, formToCreateDto } from '@/types'
 
 interface Props {
   contact?: Contact | null
@@ -223,17 +219,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  submit: [contact: Contact]
+  submit: [contact: ContactCreateDto]
   cancel: []
   delete: [contact: Contact]
 }>()
 
-const formData = reactive<Contact>({
+const formData = reactive<ContactForm>({
   name: '',
   email: '',
   phone: '',
   photo: null,
-  isFavorite: false,
+  favorite: false,
   isActive: true
 })
 
@@ -260,7 +256,7 @@ watch(
   () => props.contact,
   (newContact) => {
     if (newContact) {
-      Object.assign(formData, { ...newContact })
+      Object.assign(formData, contactToForm(newContact))
     } else {
       // Reset form for new contact
       Object.assign(formData, {
@@ -268,7 +264,7 @@ watch(
         email: '',
         phone: '',
         photo: null,
-        isFavorite: false,
+        favorite: false,
         isActive: true
       })
     }
@@ -295,7 +291,7 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
-  if (!formData.email.trim()) {
+  if (!formData.email || !formData.email.trim()) {
     errors.email = 'Email é obrigatório'
     isValid = false
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -303,7 +299,7 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
-  if (!formData.phone.trim()) {
+  if (!formData.phone || !formData.phone.trim()) {
     errors.phone = 'Telefone é obrigatório'
     isValid = false
   }
@@ -314,7 +310,7 @@ const validateForm = (): boolean => {
 const handleSubmit = () => {
   if (!validateForm()) return
 
-  emit('submit', { ...formData })
+  emit('submit', formToCreateDto(formData))
 }
 
 const openPhotoUpload = () => {

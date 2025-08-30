@@ -57,8 +57,8 @@
               />
               <button
                 type="button"
-                @click="togglePasswordVisibility"
                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-surface-400 hover:text-surface-600 transition-colors"
+                @click="togglePasswordVisibility"
               >
                 <i
                   :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"

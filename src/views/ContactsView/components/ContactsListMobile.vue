@@ -1,8 +1,8 @@
 <template>
   <div>
-    <ContactsEmptyState 
-      v-if="contacts.length === 0 || loading" 
-      :loading="loading" 
+    <ContactsEmptyState
+      v-if="contacts.length === 0 || loading"
+      :loading="loading"
     />
 
     <div v-else class="space-y-2">
@@ -14,7 +14,7 @@
       >
         <div class="flex items-center space-x-3">
           <Avatar
-            :image="contact.photo"
+            :image="contact.photo || undefined"
             :label="contact.photo ? '' : getInitials(contact.name)"
             class="w-10 h-10"
             shape="circle"
@@ -35,16 +35,13 @@
         />
       </div>
 
-      <div
-        v-if="totalRecords > rowsPerPage"
-        class="flex justify-center mt-4"
-      >
+      <div v-if="totalRecords > rowsPerPage" class="flex justify-center mt-4">
         <Paginator
-          :rows="rowsPerPage"
-          :totalRecords="totalRecords"
           v-model:first="firstPage"
+          :rows="rowsPerPage"
+          :total-records="totalRecords"
           template="PrevPageLink CurrentPageReport NextPageLink"
-          currentPageReportTemplate="{currentPage} de {totalPages}"
+          current-page-report-template="{currentPage} de {totalPages}"
         />
       </div>
     </div>
@@ -71,10 +68,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const emit = defineEmits([
-  'edit', 
-  'toggleFavorite'
-])
+const emit = defineEmits(['edit', 'toggleFavorite'])
 
 const rowsPerPage = ref(10)
 const firstPage = ref(0)

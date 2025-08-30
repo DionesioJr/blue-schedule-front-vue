@@ -21,8 +21,8 @@
         :icon="showFavoritesOnly ? 'pi pi-list' : 'pi pi-heart-fill'"
         :outlined="!showFavoritesOnly"
         size="small"
-        @click="toggleFavoritesFilter"
         class="whitespace-nowrap text-xs"
+        @click="toggleFavoritesFilter"
       />
 
       <Button
@@ -30,8 +30,8 @@
         :icon="showActiveOnly ? 'pi pi-list' : 'pi pi-check-circle'"
         :outlined="!showActiveOnly"
         size="small"
-        @click="toggleActiveFilter"
         class="whitespace-nowrap text-xs"
+        @click="toggleActiveFilter"
       />
     </div>
   </div>

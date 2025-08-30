@@ -4,7 +4,7 @@
     <div class="flex flex-col items-center mb-6">
       <div class="relative mb-4">
         <Avatar
-          :image="userProfile.photo"
+          :image="userProfile.photo || undefined"
           :label="userProfile.photo ? '' : getInitials(userProfile.name)"
           class="w-24 h-24 text-xl"
           shape="circle"
@@ -28,8 +28,8 @@
           severity="secondary"
           size="small"
           class="text-xs"
-          @click="removePhoto"
           :disabled="!userProfile.photo"
+          @click="removePhoto"
         />
       </div>
     </div>
@@ -106,9 +106,9 @@
         <FileUpload
           mode="basic"
           name="photo"
-          :maxFileSize="1000000"
+          :max-file-size="1000000"
           accept="image/*"
-          :chooseLabel="'Selecionar Foto'"
+          :choose-label="'Selecionar Foto'"
           @select="onPhotoSelect"
           @error="onPhotoError"
         />

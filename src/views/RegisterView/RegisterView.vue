@@ -35,8 +35,8 @@
             </label>
             <InputText
               id="nome"
-              type="text"
               v-model="nome"
+              type="text"
               placeholder="Seu nome completo"
               class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
               required
@@ -52,8 +52,8 @@
             </label>
             <InputText
               id="email"
-              type="email"
               v-model="email"
+              type="email"
               placeholder="seuemail@exemplo.com"
               class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
               required
@@ -70,16 +70,16 @@
             <div class="relative">
               <InputText
                 id="password"
-                :type="showPassword ? 'text' : 'password'"
                 v-model="password"
+                :type="showPassword ? 'text' : 'password'"
                 placeholder="••••••••"
                 class="w-full px-3 sm:px-4 py-2 sm:py-3 pr-12 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
                 required
               />
               <button
                 type="button"
-                @click="togglePasswordVisibility"
                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-surface-400 hover:text-surface-600 transition-colors"
+                @click="togglePasswordVisibility"
               >
                 <i
                   :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"

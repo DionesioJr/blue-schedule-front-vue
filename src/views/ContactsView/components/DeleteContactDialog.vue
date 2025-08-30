@@ -51,16 +51,7 @@
 import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-
-interface Contact {
-  id: number
-  name: string
-  email: string
-  phone: string
-  photo: string | null
-  isFavorite: boolean
-  isActive: boolean
-}
+import type { Contact } from '@/types'
 
 interface Props {
   visible: boolean

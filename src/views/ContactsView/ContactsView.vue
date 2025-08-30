@@ -68,7 +68,10 @@ import NewContactDialog from './components/NewContactDialog.vue'
 import EditContactDialog from './components/EditContactDialog.vue'
 import DeleteContactDialog from './components/DeleteContactDialog.vue'
 
-interface Contact {
+import type { Contact, ContactCreateDto } from '@/types'
+
+// Local contact type for mock data
+interface MockContact {
   id: number
   name: string
   email: string
@@ -79,7 +82,7 @@ interface Contact {
 }
 
 // Mock data for demonstration
-const contacts = ref<Contact[]>([
+const contacts = ref<MockContact[]>([
   {
     id: 1,
     name: 'João Silva',
@@ -198,17 +201,17 @@ const openNewContactDialog = () => {
   showNewContactForm.value = true
 }
 
-const openEditContactDialog = (contact: Contact) => {
+const openEditContactDialog = (contact: any) => {
   selectedContact.value = { ...contact }
   showContactDialog.value = true
 }
 
-const openDeleteContactDialog = (contact: Contact) => {
+const openDeleteContactDialog = (contact: any) => {
   contactToDelete.value = contact
   showDeleteDialog.value = true
 }
 
-const handleNewContactSubmit = async (contactData: Contact) => {
+const handleNewContactSubmit = async (contactData: ContactCreateDto) => {
   saving.value = true
 
   try {
@@ -216,8 +219,13 @@ const handleNewContactSubmit = async (contactData: Contact) => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     // Add new contact
-    const newContact: Contact = {
-      ...contactData,
+    const newContact: MockContact = {
+      name: contactData.name,
+      email: contactData.email || '',
+      phone: contactData.phone || '',
+      photo: contactData.photo || null,
+      isFavorite: contactData.favorite,
+      isActive: true,
       id: Math.max(...contacts.value.map((c) => c.id), 0) + 1
     }
     contacts.value.push(newContact)
@@ -241,7 +249,7 @@ const handleNewContactSubmit = async (contactData: Contact) => {
   }
 }
 
-const handleContactSubmit = async (contactData: Contact) => {
+const handleContactSubmit = async (contactData: ContactCreateDto) => {
   saving.value = true
 
   try {
@@ -251,12 +259,17 @@ const handleContactSubmit = async (contactData: Contact) => {
     if (isEditing.value) {
       // Update existing contact
       const index = contacts.value.findIndex(
-        (c) => c.id === selectedContact.value?.id
+        (c) => c.id === Number(selectedContact.value?.id)
       )
       if (index > -1) {
         contacts.value[index] = {
-          ...contactData,
-          id: selectedContact.value!.id
+          name: contactData.name,
+          email: contactData.email || '',
+          phone: contactData.phone || '',
+          photo: contactData.photo || null,
+          isFavorite: contactData.favorite,
+          isActive: true,
+          id: Number(selectedContact.value!.id)
         }
         toast.add({
           severity: 'success',
@@ -267,8 +280,13 @@ const handleContactSubmit = async (contactData: Contact) => {
       }
     } else {
       // Add new contact
-      const newContact: Contact = {
-        ...contactData,
+      const newContact: MockContact = {
+        name: contactData.name,
+        email: contactData.email || '',
+        phone: contactData.phone || '',
+        photo: contactData.photo || null,
+        isFavorite: contactData.favorite,
+        isActive: true,
         id: Math.max(...contacts.value.map((c) => c.id), 0) + 1
       }
       contacts.value.push(newContact)
@@ -301,7 +319,7 @@ const handleDeleteContact = async (contact: Contact) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const index = contacts.value.findIndex((c) => c.id === contact.id)
+    const index = contacts.value.findIndex((c) => c.id === Number(contact.id))
     if (index > -1) {
       contacts.value.splice(index, 1)
       toast.add({

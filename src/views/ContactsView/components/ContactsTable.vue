@@ -24,8 +24,8 @@
             :icon="showFavoritesOnly ? 'pi pi-list' : 'pi pi-heart-fill'"
             :outlined="!showFavoritesOnly"
             size="small"
-            @click="toggleFavoritesFilter"
             class="whitespace-nowrap text-xs"
+            @click="toggleFavoritesFilter"
           />
 
           <Button
@@ -33,8 +33,8 @@
             :icon="showActiveOnly ? 'pi pi-list' : 'pi pi-check-circle'"
             :outlined="!showActiveOnly"
             size="small"
-            @click="toggleActiveFilter"
             class="whitespace-nowrap text-xs"
+            @click="toggleActiveFilter"
           />
         </div>
       </div>
@@ -42,7 +42,7 @@
       <!-- Mobile View - Minimal List -->
       <div class="block md:hidden">
         <div v-if="loading" class="text-center py-8">
-          <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="4" />
+          <ProgressSpinner style="width: 50px; height: 50px" stroke-width="4" />
           <p class="text-surface-600 mt-4">Carregando contatos...</p>
         </div>
 
@@ -63,7 +63,7 @@
           >
             <div class="flex items-center space-x-3">
               <Avatar
-                :image="contact.photo"
+                :image="contact.photo || undefined"
                 :label="contact.photo ? '' : getInitials(contact.name)"
                 class="w-10 h-10"
                 shape="circle"
@@ -90,11 +90,11 @@
             class="flex justify-center mt-4"
           >
             <Paginator
-              :rows="rowsMobile"
-              :totalRecords="totalRecords"
               v-model:first="firstMobile"
+              :rows="rowsMobile"
+              :total-records="totalRecords"
               template="PrevPageLink CurrentPageReport NextPageLink"
-              currentPageReportTemplate="{currentPage} de {totalPages}"
+              current-page-report-template="{currentPage} de {totalPages}"
             />
           </div>
         </div>
@@ -107,10 +107,10 @@
           :loading="loading"
           :paginator="true"
           :rows="10"
-          :totalRecords="totalRecords"
-          :rowsPerPageOptions="[5, 10, 25, 50]"
-          paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-          currentPageReportTemplate="{first} - {last} de {totalRecords} contatos"
+          :total-records="totalRecords"
+          :rows-per-page-options="[5, 10, 25, 50]"
+          paginator-template="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+          current-page-report-template="{first} - {last} de {totalRecords} contatos"
           class="p-datatable-striped"
           :pt="{
             table: { style: 'margin-bottom: 1.5rem' },
@@ -118,11 +118,12 @@
               style:
                 'padding-top: 1rem; border-top: 1px solid var(--surface-border)'
             },
-            headerCell: { 
-              style: 'font-weight: 500; color: var(--text-color); background: var(--surface-50)'
+            headerCell: {
+              style:
+                'font-weight: 500; color: var(--text-color); background: var(--surface-50)'
             }
           }"
-          stripedRows
+          striped-rows
           @page="onPage"
           @sort="onSort"
         >
@@ -142,7 +143,7 @@
             <div class="text-center py-12">
               <ProgressSpinner
                 style="width: 50px; height: 50px"
-                strokeWidth="4"
+                stroke-width="4"
               />
               <p class="text-surface-600 mt-4">Carregando contatos...</p>
             </div>
@@ -152,7 +153,7 @@
           <Column field="photo" header="Foto" class="w-20">
             <template #body="{ data }">
               <Avatar
-                :image="data.photo"
+                :image="data.photo || undefined"
                 :label="data.photo ? '' : getInitials(data.name)"
                 class="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity"
                 shape="circle"
@@ -201,15 +202,15 @@
           <Column field="isFavorite" header="Favorito" class="w-24">
             <template #body="{ data }">
               <Button
-                :icon="data.isFavorite ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                :class="data.isFavorite ? 'text-red-500' : 'text-surface-400'"
-                text
-                @click="toggleFavorite(data)"
                 v-tooltip.top="
                   data.isFavorite
                     ? 'Remover dos favoritos'
                     : 'Adicionar aos favoritos'
                 "
+                :icon="data.isFavorite ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                :class="data.isFavorite ? 'text-red-500' : 'text-surface-400'"
+                text
+                @click="toggleFavorite(data)"
               />
             </template>
           </Column>
@@ -229,12 +230,12 @@
           <Column header="Ações" class="w-32">
             <template #body="{ data }">
               <Button
+                v-tooltip.top="'Ações'"
                 icon="pi pi-ellipsis-h"
                 size="small"
                 severity="secondary"
                 outlined
                 text
-                v-tooltip.top="'Ações'"
                 @click="toggleActionMenu($event, data)"
               />
             </template>
@@ -294,7 +295,9 @@ const showFavoritesOnly = ref(false)
 const showActiveOnly = ref(false)
 const totalRecords = ref(0)
 const actionMenu = ref()
-const currentActionItems = ref([])
+const currentActionItems = ref<
+  { label: string; icon: string; command: () => void }[]
+>([])
 
 // Mobile pagination
 const rowsMobile = ref(10)
@@ -396,12 +399,11 @@ const deleteContact = (contact: Contact) => {
   emit('deleteContact', contact)
 }
 
-const onPage = (event: any) => {
+const onPage = () => {
   // Pagination logic
 }
 
-const onSort = (event: any) => {
+const onSort = () => {
   // Sorting logic
 }
 </script>
-
