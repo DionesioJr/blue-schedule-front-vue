@@ -58,7 +58,7 @@ export default defineComponent({
     const router = useRouter()
 
     const login = () => router.push('/login')
-    const register = () => router.push('/registro')
+    const register = () => router.push('/register')
 
     return { login, register }
   }
