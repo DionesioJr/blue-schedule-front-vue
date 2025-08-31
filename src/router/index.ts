@@ -36,6 +36,11 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterPage
+    },
+    {
+      // Rota de fallback para capturar todas as rotas não encontradas
+      path: '/:pathMatch(.*)*',
+      redirect: '/home'
     }
   ]
 })
