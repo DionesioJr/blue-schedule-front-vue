@@ -70,18 +70,6 @@
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-surface-700 mb-2">
-            Telefone
-          </label>
-          <InputMask
-            v-model="formData.phone"
-            mask="(99) 99999-9999"
-            placeholder="(11) 99999-9999"
-            class="w-full h-11 text-sm"
-          />
-        </div>
-
         <div class="flex justify-end pt-3">
           <Button
             type="submit"
@@ -100,7 +88,6 @@
       v-model:visible="showPhotoUpload"
       modal
       header="Alterar Foto do Perfil"
-      class="w-96"
     >
       <div class="text-center p-4">
         <FileUpload
@@ -121,29 +108,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import InputMask from 'primevue/inputmask'
 import Avatar from 'primevue/avatar'
 import Dialog from 'primevue/dialog'
 import FileUpload from 'primevue/fileupload'
 
-// Mock user data
-const userProfile = ref({
-  name: 'João Silva',
-  email: 'joao@email.com',
-  phone: '(11) 99999-9999',
-  photo: null as string | null
+// @ts-ignore
+import { usersService } from '@/services'
+// @ts-ignore
+import { useAuth } from '@/composables/useApi'
+
+interface UserProfile {
+  name: string
+  email: string
+  photo: string | null
+}
+
+interface UserFormData {
+  name: string
+  email: string
+}
+
+// User profile data
+const userProfile = ref<UserProfile>({
+  name: '',
+  email: '',
+  photo: null
 })
 
-const formData = reactive({
-  name: userProfile.value.name,
-  email: userProfile.value.email,
-  phone: userProfile.value.phone
+const formData = reactive<UserFormData>({
+  name: '',
+  email: ''
 })
 
 const errors = reactive({
@@ -156,6 +156,51 @@ const showPhotoUpload = ref(false)
 
 const confirm = useConfirm()
 const toast = useToast()
+const authStore = useAuth()
+
+// Carregar dados reais do usuário ao montar o componente
+onMounted(async () => {
+  try {
+    console.log('PersonalInfoTab: Carregando perfil do usuário...')
+
+    // Carregar perfil do usuário usando o serviço diretamente
+    const profile = await usersService.getProfile()
+
+    console.log('PersonalInfoTab: Perfil carregado:', profile)
+
+    // Atualizar dados do perfil
+    userProfile.value.name = profile.name || ''
+    userProfile.value.email = profile.email || ''
+    userProfile.value.photo = profile.photo || null
+
+    // Atualizar formData diretamente também
+    formData.name = profile.name || ''
+    formData.email = profile.email || ''
+
+    console.log('PersonalInfoTab: userProfile atualizado:', userProfile.value)
+    console.log('PersonalInfoTab: formData atualizado diretamente:', formData)
+  } catch (error) {
+    console.error('Erro ao carregar perfil do usuário:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível carregar os dados do perfil',
+      life: 5000
+    })
+  }
+})
+
+// Preenche o formulário com os dados do perfil
+watch(
+  userProfile,
+  (newProfile) => {
+    console.log('PersonalInfoTab: Watch triggered, newProfile:', newProfile)
+    formData.name = newProfile.name
+    formData.email = newProfile.email
+    console.log('PersonalInfoTab: formData atualizado:', formData)
+  },
+  { immediate: true }
+)
 
 const getInitials = (name: string): string => {
   return name
@@ -165,19 +210,21 @@ const getInitials = (name: string): string => {
     .join('')
 }
 
-const validatePersonalInfo = (): boolean => {
-  let isValid = true
-
-  // Reset errors
+const clearErrors = () => {
   errors.name = ''
   errors.email = ''
+}
+
+const validatePersonalInfo = (): boolean => {
+  let isValid = true
+  clearErrors()
 
   if (!formData.name.trim()) {
     errors.name = 'Nome é obrigatório'
     isValid = false
   }
 
-  if (!formData.email.trim()) {
+  if (!formData.email || !formData.email.trim()) {
     errors.email = 'Email é obrigatório'
     isValid = false
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -194,20 +241,22 @@ const updatePersonalInfo = async () => {
   updating.value = true
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    userProfile.value.name = formData.name
-    userProfile.value.email = formData.email
-    userProfile.value.phone = formData.phone
-
-    toast.add({
-      severity: 'success',
-      summary: 'Informações atualizadas',
-      detail: 'Suas informações pessoais foram atualizadas com sucesso',
-      life: 3000
+    // Atualizar dados do usuário usando o serviço diretamente
+    const updatedProfile = await usersService.updateProfile({
+      name: formData.name,
+      photo: userProfile.value.photo || undefined
     })
+
+    // Atualizar userProfile local com a resposta da API
+    userProfile.value.name = updatedProfile.name || formData.name
+    userProfile.value.email = updatedProfile.email || formData.email
+    
+    // Atualizar o auth store para que o header seja atualizado
+    await authStore.loadUserProfile()
+
+    
   } catch (error) {
+    console.error('Erro ao atualizar perfil:', error)
     toast.add({
       severity: 'error',
       summary: 'Erro',
@@ -226,17 +275,32 @@ const openPhotoUpload = () => {
 const onPhotoSelect = (event: any) => {
   const file = event.files[0]
   if (file) {
-    // Create a URL for the uploaded file (in real app, upload to server)
     const reader = new FileReader()
-    reader.onload = (e) => {
-      userProfile.value.photo = e.target?.result as string
-      showPhotoUpload.value = false
-      toast.add({
-        severity: 'success',
-        summary: 'Foto atualizada',
-        detail: 'Sua foto de perfil foi atualizada com sucesso',
-        life: 3000
-      })
+    reader.onload = async (e) => {
+      try {
+        // Salvar a foto em base64 no perfil local
+        userProfile.value.photo = e.target?.result as string
+
+        // Enviar para o servidor
+        await updatePersonalInfo()
+
+        showPhotoUpload.value = false
+        
+        toast.add({
+          severity: 'success',
+          summary: 'Foto atualizada',
+          detail: 'Sua foto de perfil foi atualizada com sucesso',
+          life: 3000
+        })
+      } catch (error) {
+        console.error('Erro ao salvar a foto:', error)
+        toast.add({
+          severity: 'error',
+          summary: 'Erro no upload',
+          detail: 'Não foi possível salvar a foto',
+          life: 5000
+        })
+      }
     }
     reader.readAsDataURL(file)
   }
@@ -260,15 +324,36 @@ const removePhoto = () => {
     acceptClass: 'p-button-text p-button-text',
     rejectLabel: 'Cancelar',
     acceptLabel: 'Remover',
-    accept: () => {
-      userProfile.value.photo = null
-      toast.add({
-        severity: 'info',
-        summary: 'Foto removida',
-        detail: 'Sua foto de perfil foi removida',
-        life: 3000
-      })
+    accept: async () => {
+      try {
+        // Atualizar perfil removendo a foto
+        await usersService.updateProfile({
+          name: formData.name,
+          photo: undefined
+        })
+
+        userProfile.value.photo = null
+
+        // Atualizar o auth store para que o header seja atualizado
+        await authStore.loadUserProfile()
+
+        toast.add({
+          severity: 'info',
+          summary: 'Foto removida',
+          detail: 'Sua foto de perfil foi removida',
+          life: 3000
+        })
+      } catch (error) {
+        console.error('Erro ao remover foto:', error)
+        toast.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Não foi possível remover a foto',
+          life: 5000
+        })
+      }
     }
   })
 }
 </script>
+ 

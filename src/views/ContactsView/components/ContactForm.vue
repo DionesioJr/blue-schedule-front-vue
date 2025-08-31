@@ -104,43 +104,36 @@
 
       <div class="flex items-center space-x-3">
         <Checkbox
-          v-model="formData.isActive"
+          :modelValue="formData.isActive"
           :binary="true"
           input-id="active"
+          @update:modelValue="handleIsActiveChange"
         />
         <label
           for="active"
           class="text-sm font-medium text-surface-700 cursor-pointer"
+          @click="toggleIsActive"
         >
-          Contato ativo
+          Contato ativo ({{ formData.isActive ? 'Sim' : 'Não' }})
         </label>
       </div>
     </div>
 
     <!-- Form Actions -->
-    <div class="flex justify-between items-center pt-4">
-      <!-- Delete button on the left -->
-      <div>
-        <Button
-          v-if="showDeleteButton && isEditing"
-          type="button"
-          label="Excluir Contato"
-          icon="pi pi-trash"
-          severity="danger"
-          outlined
-          size="small"
-          @click="handleDelete"
-        />
-      </div>
+    <div
+      class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 pt-4"
+    >
+      <!-- Mobile: vertical layout, Desktop: horizontal with justify-between -->
 
-      <!-- Cancel and Save buttons on the right -->
-      <div class="flex gap-3">
+      <!-- Primary actions (Save/Cancel) - appear first on mobile -->
+      <div class="flex flex-col sm:flex-row gap-3 md:order-2">
         <Button
           type="button"
           label="Cancelar"
           severity="secondary"
           outlined
           size="small"
+          class="w-full sm:w-auto"
           @click="$emit('cancel')"
         />
         <Button
@@ -149,7 +142,22 @@
           :icon="isEditing ? 'pi pi-check' : 'pi pi-plus'"
           size="small"
           :loading="loading"
-          class="bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700"
+          class="bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700 w-full sm:w-auto"
+        />
+      </div>
+
+      <!-- Delete button - appears last on mobile, first on desktop -->
+      <div class="md:order-1">
+        <Button
+          v-if="showDeleteButton && isEditing"
+          type="button"
+          label="Excluir Contato"
+          icon="pi pi-trash"
+          severity="danger"
+          outlined
+          size="small"
+          class="w-full md:w-auto"
+          @click="handleDelete"
         />
       </div>
     </div>
@@ -159,9 +167,6 @@
       v-model:visible="showPhotoUpload"
       modal
       header="Alterar Foto do Contato"
-      class="w-96 md:w-auto"
-      :style="{ width: '95vw', maxHeight: '95vh' }"
-      :breakpoints="{ '960px': '95vw' }"
     >
       <div class="text-center p-4">
         <FileUpload
@@ -243,7 +248,7 @@ const showPhotoUpload = ref(false)
 const showDeleteDialog = ref(false)
 const toast = useToast()
 
-const isEditing = computed(() => !!props.contact?.id)
+const isEditing = computed(() => !!props.contact?.uuid)
 
 const clearErrors = () => {
   errors.name = ''
@@ -257,6 +262,10 @@ watch(
   (newContact) => {
     if (newContact) {
       Object.assign(formData, contactToForm(newContact))
+      console.log('Formulário preenchido com contato existente:', {
+        ...formData
+      })
+      console.log('isActive após preencher formulário:', formData.isActive)
     } else {
       // Reset form for new contact
       Object.assign(formData, {
@@ -267,10 +276,19 @@ watch(
         favorite: false,
         isActive: true
       })
+      console.log('Formulário resetado para novo contato:', { ...formData })
     }
     clearErrors()
   },
   { immediate: true }
+)
+
+// Watch para monitorar mudanças no campo isActive
+watch(
+  () => formData.isActive,
+  (newValue, oldValue) => {
+    console.log('isActive mudou de', oldValue, 'para', newValue)
+  }
 )
 
 const getInitials = (name: string): string => {
@@ -310,7 +328,14 @@ const validateForm = (): boolean => {
 const handleSubmit = () => {
   if (!validateForm()) return
 
-  emit('submit', formToCreateDto(formData))
+  console.log('Formulário antes de enviar:', { ...formData })
+  console.log('isActive antes de enviar:', formData.isActive)
+
+  const dto = formToCreateDto(formData)
+  console.log('DTO a ser enviado:', dto)
+  console.log('isActive no DTO:', dto.isActive)
+
+  emit('submit', dto)
 }
 
 const openPhotoUpload = () => {
@@ -361,5 +386,17 @@ const handleDelete = () => {
 const handleDeleteConfirm = (contact: Contact) => {
   showDeleteDialog.value = false
   emit('delete', contact)
+}
+
+// Métodos para lidar com o campo isActive
+const handleIsActiveChange = (value: boolean) => {
+  console.log('handleIsActiveChange chamado com valor:', value)
+  formData.isActive = value
+  console.log('formData.isActive após atualização:', formData.isActive)
+}
+
+const toggleIsActive = () => {
+  formData.isActive = !formData.isActive
+  console.log('toggleIsActive: isActive agora é', formData.isActive)
 }
 </script>

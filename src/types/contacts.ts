@@ -1,16 +1,13 @@
 export interface Contact {
-  id: string
-  photo?: string
+  uuid: string
+  photo?: string | null
   name: string
   email?: string
   phone?: string
   favorite: boolean
   isActive: boolean
-  isDeleted: boolean
-  deletedAt?: string
   createdAt: string
   updatedAt: string
-  userId: string
 }
 
 export interface ContactCreateDto {
@@ -19,6 +16,7 @@ export interface ContactCreateDto {
   email?: string
   phone?: string
   favorite: boolean
+  isActive?: boolean
 }
 
 export interface ContactUpdateDto {
@@ -27,6 +25,7 @@ export interface ContactUpdateDto {
   email?: string
   phone?: string
   favorite?: boolean
+  isActive?: boolean
 }
 
 export interface ContactsQueryParams {

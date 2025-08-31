@@ -7,10 +7,12 @@
         <!-- Logo -->
         <div class="flex items-center">
           <router-link to="/contacts" class="flex items-center space-x-3">
-            <div
-              class="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center"
-            >
-              <i class="pi pi-users text-white text-sm"></i>
+            <div class="w-8 h-8 flex items-center justify-center">
+              <img
+                src="/image/Blue.png"
+                alt="Blue Technology"
+                class="w-24 sm:w-32 h-auto mx-auto"
+              />
             </div>
             <span class="text-lg font-semibold text-surface-900"
               >Blue Agenda</span
@@ -26,8 +28,8 @@
             @click="toggleUserMenu"
           >
             <Avatar
-              :image="currentUser.photo || undefined"
-              :label="currentUser.photo ? '' : getUserInitials()"
+              :image="currentUser.photo"
+              :label="!currentUser.photo ? getUserInitials() : ''"
               class="w-12 h-12 text-sm"
               size="normal"
               shape="circle"
@@ -43,8 +45,8 @@
             <div class="px-4 py-3 border-b border-surface-200">
               <div class="flex items-center space-x-3">
                 <Avatar
-                  :image="currentUser.photo || undefined"
-                  :label="currentUser.photo ? '' : getUserInitials()"
+                  :image="currentUser.photo"
+                  :label="!currentUser.photo ? getUserInitials() : ''"
                   class="w-10 h-10 text-sm"
                   shape="circle"
                 />
@@ -90,17 +92,25 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Avatar from 'primevue/avatar'
+// @ts-ignore
+import { usersService } from '@/services/users.service'
 
 const router = useRouter()
 const toast = useToast()
 
 const showUserMenu = ref(false)
 
-// Mock user data
-const currentUser = ref({
-  name: 'João Silva',
-  email: 'joao@email.com',
-  photo: null as string | null
+interface UserData {
+  name: string
+  email: string
+  photo?: string | undefined
+}
+
+// Dados do usuário
+const currentUser = ref<UserData>({
+  name: 'Usuário',
+  email: 'email@exemplo.com',
+  photo: undefined
 })
 
 const toggleUserMenu = () => {
@@ -112,6 +122,9 @@ const closeUserMenu = () => {
 }
 
 const getUserInitials = (): string => {
+  if (!currentUser.value.name || currentUser.value.name === 'Usuário')
+    return 'U'
+
   return currentUser.value.name
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase())
@@ -119,19 +132,28 @@ const getUserInitials = (): string => {
     .join('')
 }
 
-const handleLogout = () => {
+const handleLogout = async () => {
   closeUserMenu()
-  toast.add({
-    severity: 'success',
-    summary: 'Logout realizado',
-    detail: 'Você foi desconectado com sucesso',
-    life: 3000
-  })
 
-  // In a real app, clear auth tokens and redirect to login
-  setTimeout(() => {
+  try {
+    // Redirecionar para login
     router.push('/login')
-  }, 1500)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Logout realizado',
+      detail: 'Você foi desconectado com sucesso',
+      life: 3000
+    })
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível fazer logout',
+      life: 5000
+    })
+  }
 }
 
 // Close menu when clicking outside
@@ -148,5 +170,33 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+})
+
+// Carregar o perfil do usuário apenas quando a página é atualizada (F5)
+onMounted(async () => {
+  try {
+
+    // Verificar se há um perfil em cache primeiro
+    const cachedProfile = usersService.getCachedProfile()
+    if (cachedProfile) {
+      console.log('AppHeader: Usando perfil em cache')
+      currentUser.value = {
+        name: cachedProfile.name,
+        email: cachedProfile.email,
+        photo: cachedProfile.photo
+      }
+    } else {
+      // Se não houver cache, buscar do servidor
+      const profile = await usersService.getProfile()
+      currentUser.value = {
+        name: profile.name,
+        email: profile.email,
+        photo: profile.photo
+      }
+      console.log('AppHeader: Perfil carregado com sucesso:', currentUser.value)
+    }
+  } catch (error) {
+    console.error('AppHeader: Erro ao carregar perfil do usuário:', error)
+  }
 })
 </script>

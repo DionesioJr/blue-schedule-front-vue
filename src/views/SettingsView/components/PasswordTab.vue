@@ -11,11 +11,8 @@
               v-model="passwordData.currentPassword"
               :type="showCurrentPassword ? 'text' : 'password'"
               placeholder="Digite sua senha atual"
-              class="w-full h-11 text-sm pr-12 border border-surface-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-              :class="{
-                'border-red-500 focus:border-red-500 focus:ring-red-100':
-                  errors.currentPassword
-              }"
+              class="w-full h-11 text-sm pr-12"
+              :class="{ 'p-invalid': errors.currentPassword }"
             />
             <button
               type="button"
@@ -39,26 +36,19 @@
               Nova Senha *
             </label>
             <div class="relative">
-              <InputText
+              <Password
                 v-model="passwordData.newPassword"
-                :type="showNewPassword ? 'text' : 'password'"
                 placeholder="Digite sua nova senha"
-                class="w-full h-11 text-sm pr-12 border border-surface-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                :class="{
-                  'border-red-500 focus:border-red-500 focus:ring-red-100':
-                    errors.newPassword
-                }"
+                class="w-full"
+                inputClass="w-full h-11 text-sm"
+                :class="{ 'p-invalid': errors.newPassword }"
+                :feedback="true"
+                toggleMask
+                promptLabel="Digite uma senha"
+                weakLabel="Fraca"
+                mediumLabel="Média"
+                strongLabel="Forte"
               />
-              <button
-                type="button"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center text-surface-400 hover:text-surface-600 transition-colors"
-                @click="toggleNewPasswordVisibility"
-              >
-                <i
-                  :class="showNewPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                  class="text-sm"
-                ></i>
-              </button>
             </div>
             <small v-if="errors.newPassword" class="text-red-600 text-xs">{{
               errors.newPassword
@@ -74,11 +64,8 @@
                 v-model="passwordData.confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 placeholder="Confirme sua nova senha"
-                class="w-full h-11 text-sm pr-12 border border-surface-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
-                :class="{
-                  'border-red-500 focus:border-red-500 focus:ring-red-100':
-                    errors.confirmPassword
-                }"
+                class="w-full h-11 text-sm pr-12"
+                :class="{ 'p-invalid': errors.confirmPassword }"
               />
               <button
                 type="button"
@@ -104,8 +91,7 @@
             icon="pi pi-key"
             size="small"
             :loading="changingPassword"
-            severity="secondary"
-            class="px-6"
+            class="bg-blue-600 hover:bg-blue-700 border-blue-600 hover:border-blue-700 px-6"
           />
         </div>
       </div>
@@ -119,6 +105,9 @@ import { useToast } from 'primevue/usetoast'
 
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+
+import { usersService } from '@/services/users.service'
 
 const passwordData = reactive({
   currentPassword: '',
@@ -134,17 +123,12 @@ const errors = reactive({
 
 const changingPassword = ref(false)
 const showCurrentPassword = ref(false)
-const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const toast = useToast()
 
 const toggleCurrentPasswordVisibility = () => {
   showCurrentPassword.value = !showCurrentPassword.value
-}
-
-const toggleNewPasswordVisibility = () => {
-  showNewPassword.value = !showNewPassword.value
 }
 
 const toggleConfirmPasswordVisibility = () => {
@@ -189,8 +173,12 @@ const changePassword = async () => {
   changingPassword.value = true
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Chamar API real para alterar senha
+    await usersService.changePassword({
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+      confirmNewPassword: passwordData.confirmPassword
+    })
 
     // Reset form
     passwordData.currentPassword = ''
@@ -203,13 +191,23 @@ const changePassword = async () => {
       detail: 'Sua senha foi alterada com sucesso',
       life: 3000
     })
-  } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Erro',
-      detail: 'Não foi possível alterar a senha',
-      life: 5000
-    })
+  } catch (error: any) {
+    console.error('Erro ao alterar senha:', error)
+
+    // Tratar erro específico de senha atual incorreta
+    if (
+      error.message?.includes('senha atual') ||
+      error.message?.includes('current password')
+    ) {
+      errors.currentPassword = 'Senha atual incorreta'
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: error.message || 'Não foi possível alterar a senha',
+        life: 5000
+      })
+    }
   } finally {
     changingPassword.value = false
   }

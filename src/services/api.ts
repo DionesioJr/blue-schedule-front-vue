@@ -55,11 +55,12 @@ class ApiService {
     const refreshToken = this.getRefreshToken()
     if (refreshToken) {
       try {
-        const response = await this.api.post(
-          '/api/auth/refresh',
+        const response = await axios.post(
+          `${this.baseURL}/api/auth/refresh`,
           {},
           {
-            headers: { Authorization: `Bearer ${refreshToken}` }
+            headers: { Authorization: `Bearer ${refreshToken}` },
+            timeout: 10000
           }
         )
 

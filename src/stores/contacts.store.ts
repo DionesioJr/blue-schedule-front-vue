@@ -48,21 +48,22 @@ export const useContactsStore = defineStore('contacts', () => {
   const totalContacts = computed(() => pagination.value.total)
 
   const activeContacts = computed(() => {
-    return contacts.value.filter((contact) => !contact.isDeleted)
+    return contacts.value.filter((contact) => contact.isActive)
   })
 
   const favoriteContacts = computed(() => {
     return contacts.value.filter(
-      (contact) => contact.favorite && !contact.isDeleted
+      (contact) => contact.favorite && contact.isActive
     )
   })
 
   // Actions
   async function fetchContacts(params?: ContactsQueryParams, useCache = true) {
-    // Se usar cache e o cache for válido, retornar dados em cache
+    // Se usar cache e o cache for válido e há dados, retornar dados em cache
     if (
       useCache &&
       isContactsCacheValid.value &&
+      contacts.value.length > 0 &&
       !params?.searchTerm &&
       !params?.page
     ) {
@@ -157,7 +158,7 @@ export const useContactsStore = defineStore('contacts', () => {
       contactsService.setCachedContact(contact)
 
       // Atualizar na lista se existir
-      const index = contacts.value.findIndex((c) => c.id === uuid)
+      const index = contacts.value.findIndex((c) => c.uuid === uuid)
       if (index >= 0) {
         contacts.value[index] = contact
       }
@@ -185,6 +186,9 @@ export const useContactsStore = defineStore('contacts', () => {
       // Atualizar contador total
       pagination.value.total += 1
 
+      // Invalidar cache para forçar refresh na próxima consulta
+      lastFetch.value = Date.now()
+
       return newContact
     } catch (err: any) {
       error.value = err.message || 'Erro ao criar contato'
@@ -205,13 +209,13 @@ export const useContactsStore = defineStore('contacts', () => {
       )
 
       // Atualizar na lista local
-      const index = contacts.value.findIndex((c) => c.id === uuid)
+      const index = contacts.value.findIndex((c) => c.uuid === uuid)
       if (index >= 0) {
         contacts.value[index] = updatedContact
       }
 
       // Atualizar contato atual se for o mesmo
-      if (currentContact.value?.id === uuid) {
+      if (currentContact.value?.uuid === uuid) {
         currentContact.value = updatedContact
       }
 
@@ -234,14 +238,14 @@ export const useContactsStore = defineStore('contacts', () => {
       await contactsService.deleteContact(uuid)
 
       // Remover da lista local
-      const index = contacts.value.findIndex((c) => c.id === uuid)
+      const index = contacts.value.findIndex((c) => c.uuid === uuid)
       if (index >= 0) {
         contacts.value.splice(index, 1)
         pagination.value.total -= 1
       }
 
       // Limpar contato atual se for o mesmo
-      if (currentContact.value?.id === uuid) {
+      if (currentContact.value?.uuid === uuid) {
         currentContact.value = null
       }
 
@@ -259,20 +263,21 @@ export const useContactsStore = defineStore('contacts', () => {
       const updatedContact = await contactsService.toggleFavorite(uuid)
 
       // Atualizar na lista local
-      const index = contacts.value.findIndex((c) => c.id === uuid)
+      const index = contacts.value.findIndex((c) => c.uuid === uuid)
       if (index >= 0) {
         contacts.value[index] = updatedContact
       }
 
       // Atualizar contato atual se for o mesmo
-      if (currentContact.value?.id === uuid) {
+      if (currentContact.value?.uuid === uuid) {
         currentContact.value = updatedContact
       }
 
       contactsService.setCachedContact(updatedContact)
 
-      // Invalidar cache de favoritos
+      // Forçar atualização de cache para refletir mudanças imediatamente
       lastFavoritesFetch.value = 0
+      lastFetch.value = Date.now() // Atualizar timestamp para manter cache válido
 
       return updatedContact
     } catch (err: any) {
@@ -286,17 +291,21 @@ export const useContactsStore = defineStore('contacts', () => {
       const updatedContact = await contactsService.toggleStatus(uuid)
 
       // Atualizar na lista local
-      const index = contacts.value.findIndex((c) => c.id === uuid)
+      const index = contacts.value.findIndex((c) => c.uuid === uuid)
       if (index >= 0) {
         contacts.value[index] = updatedContact
       }
 
       // Atualizar contato atual se for o mesmo
-      if (currentContact.value?.id === uuid) {
+      if (currentContact.value?.uuid === uuid) {
         currentContact.value = updatedContact
       }
 
       contactsService.setCachedContact(updatedContact)
+
+      // Forçar atualização de cache para refletir mudanças de status
+      lastFetch.value = Date.now()
+      lastFavoritesFetch.value = 0 // Favoritos podem mudar se status mudou
 
       return updatedContact
     } catch (err: any) {
@@ -335,6 +344,15 @@ export const useContactsStore = defineStore('contacts', () => {
     currentContact.value = contact
   }
 
+  function invalidateCache() {
+    lastFetch.value = 0
+    lastFavoritesFetch.value = 0
+  }
+
+  async function refreshContacts() {
+    return fetchContacts(undefined, false) // Força busca sem usar cache
+  }
+
   return {
     // State
     contacts,
@@ -366,6 +384,8 @@ export const useContactsStore = defineStore('contacts', () => {
     toggleStatus,
     clearError,
     clearCache,
-    setCurrentContact
+    setCurrentContact,
+    invalidateCache,
+    refreshContacts
   }
 })

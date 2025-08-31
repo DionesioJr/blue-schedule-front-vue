@@ -30,7 +30,7 @@ class AuthService {
       userData
     )
 
-    // Salvar tokens no localStorage
+    // Salvar tokens no localStorage se existirem
     if (response.token) {
       localStorage.setItem('token', response.token)
     }
@@ -103,6 +103,17 @@ class AuthService {
 
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken')
+  }
+
+  async deleteAccount(): Promise<void> {
+    try {
+      await apiService.delete('/api/auth/account')
+
+      this.logout()
+    } catch (error) {
+      console.error('Erro ao excluir conta:', error)
+      throw error
+    }
   }
 }
 

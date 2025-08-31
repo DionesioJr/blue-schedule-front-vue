@@ -39,8 +39,15 @@
               type="text"
               placeholder="Seu nome completo"
               class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
+              :class="{ 'border-red-500': authStore.validationErrors.name }"
               required
+              :disabled="authStore.isLoading"
             />
+            <small
+              v-if="authStore.validationErrors.name"
+              class="text-red-600 text-xs mt-1"
+              >{{ authStore.validationErrors.name }}</small
+            >
           </div>
 
           <div>
@@ -56,8 +63,15 @@
               type="email"
               placeholder="seuemail@exemplo.com"
               class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
+              :class="{ 'border-red-500': authStore.validationErrors.email }"
               required
+              :disabled="authStore.isLoading"
             />
+            <small
+              v-if="authStore.validationErrors.email"
+              class="text-red-600 text-xs mt-1"
+              >{{ authStore.validationErrors.email }}</small
+            >
           </div>
 
           <div>
@@ -74,7 +88,11 @@
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="••••••••"
                 class="w-full px-3 sm:px-4 py-2 sm:py-3 pr-12 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
+                :class="{
+                  'border-red-500': authStore.validationErrors.password
+                }"
                 required
+                :disabled="authStore.isLoading"
               />
               <button
                 type="button"
@@ -87,6 +105,11 @@
                 ></i>
               </button>
             </div>
+            <small
+              v-if="authStore.validationErrors.password"
+              class="text-red-600 text-xs mt-1"
+              >{{ authStore.validationErrors.password }}</small
+            >
           </div>
 
           <div class="flex items-center">
@@ -95,6 +118,7 @@
               v-model="termsAccept"
               :binary="true"
               class="mr-2"
+              :disabled="authStore.isLoading"
             />
             <label for="termsAccept" class="text-sm text-surface-700">
               Concordo com os
@@ -110,9 +134,12 @@
 
           <Button
             type="submit"
-            label="Criar Conta"
-            icon="pi pi-user-plus"
-            class="w-full py-2 sm:py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg sm:rounded-xl shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+            :label="authStore.isLoading ? 'Criando conta...' : 'Criar Conta'"
+            :icon="
+              authStore.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-user-plus'
+            "
+            :disabled="authStore.isLoading || !termsAccept"
+            class="w-full py-2 sm:py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg sm:rounded-xl shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none"
           />
         </form>
 
@@ -170,40 +197,89 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast for notifications -->
+    <Toast />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
 import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import Toast from 'primevue/toast'
+import { useAuth } from '@/composables/useApi'
+
+const router = useRouter()
+const toast = useToast()
+const authStore = useAuth()
 
 const nome = ref('')
 const email = ref('')
 const password = ref('')
 const termsAccept = ref(false)
 const showPassword = ref(false)
-const router = useRouter()
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
 const handleRegister = async () => {
-  try {
-    if (!termsAccept.value) {
-      alert('Você precisa aceitar os termos para continuar')
-      return
-    }
+  if (!termsAccept.value) {
+    alert('Você precisa aceitar os termos para continuar')
+    return
+  }
 
-    // Aqui você implementaria a lógica de registro
-    console.log('Registrando:', { nome: nome.value, email: email.value })
-    // Exemplo de redirecionamento após registro
-    router.push('/')
-  } catch (error) {
-    console.error('Erro no registro:', error)
+  try {
+    authStore.clearError()
+
+    // 1. Realizar o registro
+    await authStore.register({
+      name: nome.value,
+      email: email.value,
+      password: password.value
+    })
+
+    // 2. Fazer login automático após registro para obter tokens
+    await authStore.login({
+      email: email.value,
+      password: password.value
+    })
+
+    // Usuário já está logado automaticamente após registro
+    toast.add({
+      severity: 'success',
+      summary: 'Conta criada com sucesso',
+      detail: `Bem-vindo, ${authStore.userName}!`,
+      life: 3000
+    })
+
+    // Aguardar um momento para o toast aparecer antes de redirecionar
+    setTimeout(() => {
+      router.push('/contacts')
+    }, 1000)
+  } catch (err: any) {
+    console.error('Register error:', err)
+
+    // Mostrar a mensagem exata do backend
+    if (err.message === 'Dados inválidos') {
+      toast.add({
+        severity: 'error',
+        summary: 'Dados inválidos',
+        detail: 'Verifique os campos em vermelho',
+        life: 5000
+      })
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: err.message || 'Ocorreu um erro inesperado',
+        life: 5000
+      })
+    }
   }
 }
 </script>

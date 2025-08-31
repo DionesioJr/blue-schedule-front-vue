@@ -4,13 +4,15 @@
       <div class="flex flex-col md:flex-row justify-between items-center">
         <!-- Logo and Description -->
         <div class="flex items-center space-x-3 mb-4 md:mb-0">
-          <div
-            class="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center"
-          >
-            <i class="pi pi-users text-white text-sm"></i>
+          <div class="w-8 h-8 flex items-center justify-center">
+            <img
+              src="/image/Blue.png"
+              alt="Blue Technology"
+              class="w-24 sm:w-32 h-auto mx-auto"
+            />
           </div>
           <div>
-            <h3 class="text-lg font-bold text-surface-900">Blue Agenda</h3>
+            <h3 class="text-lg font-semibold text-surface-900">Blue Agenda</h3>
             <p class="text-sm text-surface-600">
               Gerenciamento inteligente de contatos
             </p>

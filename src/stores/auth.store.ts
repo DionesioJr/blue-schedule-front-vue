@@ -2,12 +2,14 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authService, usersService } from '@/services'
 import type { LoginDto, UserCreateDto, User, AuthResponse } from '@/types'
+import { validateLogin, validateRegister } from '@/rules'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const validationErrors = ref<Record<string, string>>({})
 
   // Getters
   const isAuthenticated = computed(() => {
@@ -23,6 +25,14 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isLoading.value = true
       error.value = null
+      validationErrors.value = {}
+
+      // Validação usando rules
+      const validation = validateLogin(credentials)
+      if (!validation.isValid) {
+        validationErrors.value = validation.errors
+        throw new Error('Dados inválidos')
+      }
 
       const response: AuthResponse = await authService.login(credentials)
       user.value = response.user
@@ -40,14 +50,27 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isLoading.value = true
       error.value = null
+      validationErrors.value = {}
+
+      // Validação usando rules
+      const validation = validateRegister(userData)
+      if (!validation.isValid) {
+        validationErrors.value = validation.errors
+        throw new Error('Dados inválidos')
+      }
 
       const response: AuthResponse = await authService.register(userData)
       user.value = response.user
 
       return response
     } catch (err: any) {
-      error.value = err.message || 'Erro ao criar conta'
-      throw err
+      // Capturar mensagem específica da API
+      const apiMessage = err.message || 'Erro ao criar conta'
+      error.value = apiMessage
+
+      // Criar erro com a mensagem da API para que o componente possa usar
+      const customError = new Error(apiMessage)
+      throw customError
     } finally {
       isLoading.value = false
     }
@@ -60,10 +83,11 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (err) {
       console.error('Erro ao fazer logout:', err)
     } finally {
+      authService.logout()
       user.value = null
       error.value = null
       isLoading.value = false
-      // Limpar cache dos outros stores
+      // Limpar cache dos outros stores apenas no logout
       const { useContactsStore } = await import('./contacts.store')
       const { useUsersStore } = await import('./users.store')
       useContactsStore().clearCache()
@@ -144,6 +168,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function clearError() {
     error.value = null
+    validationErrors.value = {}
   }
 
   // Inicialização automática
@@ -158,6 +183,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     isLoading,
     error,
+    validationErrors,
 
     // Getters
     isAuthenticated,

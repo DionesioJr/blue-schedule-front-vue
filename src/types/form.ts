@@ -2,18 +2,18 @@ import type { Contact, ContactCreateDto, ContactUpdateDto } from './contacts'
 
 // Tipo unificado para formulários de contato
 export interface ContactForm {
-  id?: string | number
+  uuid?: string | number
   name: string
   email?: string
   phone?: string
   photo?: string | null
   favorite: boolean
-  isActive?: boolean
+  isActive: boolean
 }
 
 // Funções utilitárias para conversão de tipos
 export const contactToForm = (contact: Contact): ContactForm => ({
-  id: contact.id,
+  uuid: contact.uuid,
   name: contact.name,
   email: contact.email,
   phone: contact.phone,
@@ -27,7 +27,8 @@ export const formToCreateDto = (form: ContactForm): ContactCreateDto => ({
   email: form.email,
   phone: form.phone,
   photo: form.photo || undefined,
-  favorite: form.favorite
+  favorite: form.favorite,
+  isActive: form.isActive
 })
 
 export const formToUpdateDto = (form: ContactForm): ContactUpdateDto => ({
@@ -35,5 +36,6 @@ export const formToUpdateDto = (form: ContactForm): ContactUpdateDto => ({
   email: form.email,
   phone: form.phone,
   photo: form.photo || undefined,
-  favorite: form.favorite
+  favorite: form.favorite,
+  isActive: form.isActive
 })

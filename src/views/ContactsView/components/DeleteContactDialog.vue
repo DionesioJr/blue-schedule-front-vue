@@ -48,24 +48,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import type { Contact } from '@/types'
+import type { Contact } from '../../../types'
+import { useContacts } from '../../../composables/useApi'
+import { useToast } from 'primevue/usetoast'
 
 interface Props {
   visible: boolean
   contact: Contact | null
-  deleting?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  deleting: false
-})
+const props = withDefaults(defineProps<Props>(), {})
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  confirm: [contact: Contact]
 }>()
 
 const isVisible = computed({
@@ -73,13 +71,47 @@ const isVisible = computed({
   set: (value) => emit('update:visible', value)
 })
 
+// Obter o serviço de contatos e toast
+const { deleteContact } = useContacts()
+const toast = useToast()
+
+// Estado de carregamento local
+const deleting = ref(false)
+
 const handleCancel = () => {
   emit('update:visible', false)
 }
 
-const handleDelete = () => {
-  if (props.contact) {
-    emit('confirm', props.contact)
+const handleDelete = async () => {
+  if (!props.contact) return
+
+  try {
+    deleting.value = true
+
+    // Executar a exclusão do contato diretamente no componente
+    await deleteContact(props.contact.uuid)
+    console.log('Contato excluído:', props.contact.uuid)
+
+    // Notificar o usuário
+    toast.add({
+      severity: 'success',
+      summary: 'Contato excluído',
+      detail: `${props.contact.name} foi removido da lista`,
+      life: 3000
+    })
+
+    // Fechar o diálogo
+    emit('update:visible', false)
+  } catch (error) {
+    console.error('Erro ao excluir contato:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível excluir o contato',
+      life: 5000
+    })
+  } finally {
+    deleting.value = false
   }
 }
 </script>

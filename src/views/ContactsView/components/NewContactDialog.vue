@@ -15,23 +15,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import ContactForm from './ContactForm.vue'
-import type { ContactCreateDto } from '@/types'
+import type { ContactCreateDto } from '../../../types'
+import { useContacts } from '../../../composables/useApi'
+import { useToast } from 'primevue/usetoast'
 
+// Usar props para controlar a visibilidade
 interface Props {
   visible: boolean
-  loading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  loading: false
+  visible: false
 })
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  submit: [contactData: ContactCreateDto]
 }>()
 
 const isVisible = computed({
@@ -39,8 +40,40 @@ const isVisible = computed({
   set: (value) => emit('update:visible', value)
 })
 
-const handleSubmit = (contactData: ContactCreateDto) => {
-  emit('submit', contactData)
+// Obter serviço de contatos e toast
+const { createContact } = useContacts()
+const toast = useToast()
+
+// Estado de carregamento local
+const loading = ref(false)
+
+const handleSubmit = async (contactData: ContactCreateDto) => {
+  loading.value = true
+
+  try {
+    const newContact = await createContact(contactData)
+    console.log('Novo contato criado:', newContact)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Contato adicionado',
+      detail: `${contactData.name} foi adicionado com sucesso`,
+      life: 3000
+    })
+
+    // Fechar o diálogo após sucesso
+    emit('update:visible', false)
+  } catch (error) {
+    console.error('Erro ao criar contato:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: 'Não foi possível salvar o contato',
+      life: 5000
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
 const handleCancel = () => {

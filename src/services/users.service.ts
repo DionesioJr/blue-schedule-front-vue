@@ -1,5 +1,5 @@
 import apiService from './api'
-import type { UserProfile, UserUpdateDto } from '@/types'
+import type { UserProfile, UserUpdateDto, ChangePasswordDto } from '@/types'
 
 class UsersService {
   async getProfile(): Promise<UserProfile> {
@@ -8,6 +8,10 @@ class UsersService {
 
   async updateProfile(userData: UserUpdateDto): Promise<UserProfile> {
     return await apiService.put<UserProfile>('/api/users/profile', userData)
+  }
+
+  async changePassword(passwordData: ChangePasswordDto): Promise<void> {
+    await apiService.put('/api/users/change-password', passwordData)
   }
 
   async deleteProfile(): Promise<void> {

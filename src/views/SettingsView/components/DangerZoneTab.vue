@@ -76,11 +76,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
+import { useRouter } from 'vue-router'
+import { usersService } from '@/services/users.service'
 
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 
 const toast = useToast()
+const router = useRouter()
 const showDeleteDialog = ref(false)
 const deletingAccount = ref(false)
 
@@ -88,9 +91,10 @@ const deleteAccount = async () => {
   deletingAccount.value = true
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Chamar o serviço de usuários para excluir a conta
+    await usersService.deleteProfile()
 
+    // Notificar o usuário sobre o sucesso
     toast.add({
       severity: 'success',
       summary: 'Conta excluída',
@@ -98,18 +102,25 @@ const deleteAccount = async () => {
       life: 3000
     })
 
+    // Fechar o diálogo
     showDeleteDialog.value = false
 
-    // In a real app, redirect to login or home page
+    // Limpar tokens do localStorage após exclusão
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+
+    // Redirecionar para a página de login após um breve intervalo
     setTimeout(() => {
-      // router.push('/login')
-      console.log('Redirect to login page')
+      router.push('/login')
     }, 3000)
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Erro ao excluir conta:', error)
+
+    // Notificar o usuário sobre o erro
     toast.add({
       severity: 'error',
       summary: 'Erro',
-      detail: 'Não foi possível excluir a conta',
+      detail: error.message || 'Não foi possível excluir a conta',
       life: 5000
     })
   } finally {

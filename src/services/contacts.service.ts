@@ -73,7 +73,7 @@ class ContactsService {
   }
 
   setCachedContact(contact: Contact): void {
-    this.contactsCache.set(contact.id, contact)
+    this.contactsCache.set(contact.uuid, contact)
   }
 
   setCachedContacts(contacts: Contact[]): void {

@@ -25,7 +25,7 @@
         </div>
 
         <!-- Login Form -->
-        <form class="space-y-6">
+        <form class="space-y-6" @submit.prevent="handleLogin">
           <div>
             <label
               for="email"
@@ -35,10 +35,19 @@
             </label>
             <InputText
               id="email"
+              v-model="email"
               type="email"
               placeholder="seuemail@exemplo.com"
               class="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
+              :class="{ 'border-red-500': authStore.validationErrors.email }"
+              required
+              :disabled="authStore.isLoading"
             />
+            <small
+              v-if="authStore.validationErrors.email"
+              class="text-red-600 text-xs mt-1"
+              >{{ authStore.validationErrors.email }}</small
+            >
           </div>
 
           <div>
@@ -51,9 +60,15 @@
             <div class="relative">
               <InputText
                 id="password"
+                v-model="password"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="••••••••"
                 class="w-full px-3 sm:px-4 py-2 sm:py-3 pr-12 rounded-lg sm:rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 transition-all bg-white/50 sm:bg-white"
+                :class="{
+                  'border-red-500': authStore.validationErrors.password
+                }"
+                required
+                :disabled="authStore.isLoading"
               />
               <button
                 type="button"
@@ -66,6 +81,11 @@
                 ></i>
               </button>
             </div>
+            <small
+              v-if="authStore.validationErrors.password"
+              class="text-red-600 text-xs mt-1"
+              >{{ authStore.validationErrors.password }}</small
+            >
           </div>
 
           <div class="flex items-center justify-between">
@@ -89,9 +109,13 @@
           </div>
 
           <Button
-            label="Entrar"
-            icon="pi pi-sign-in"
-            class="w-full py-2 sm:py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg sm:rounded-xl shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+            type="submit"
+            :label="authStore.isLoading ? 'Entrando...' : 'Entrar'"
+            :icon="
+              authStore.isLoading ? 'pi pi-spinner pi-spin' : 'pi pi-sign-in'
+            "
+            :disabled="authStore.isLoading"
+            class="w-full py-2 sm:py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold rounded-lg sm:rounded-xl shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none"
           />
         </form>
 
@@ -156,11 +180,33 @@ import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useApi'
 
+const router = useRouter()
+const authStore = useAuth()
+
+const email = ref('')
+const password = ref('')
 const rememberMe = ref(false)
 const showPassword = ref(false)
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
+}
+
+const handleLogin = async () => {
+  try {
+    authStore.clearError()
+
+    await authStore.login({
+      email: email.value,
+      password: password.value
+    })
+
+    router.push('/contacts')
+  } catch (err) {
+    console.error('Login error:', err)
+  }
 }
 </script>

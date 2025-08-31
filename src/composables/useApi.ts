@@ -29,6 +29,7 @@ export function useAuth() {
     user: authStore.user,
     isLoading: authStore.isLoading,
     error: authStore.error,
+    validationErrors: authStore.validationErrors,
     isAuthenticated: authStore.isAuthenticated,
     userName: authStore.userName,
     userEmail: authStore.userEmail,
@@ -38,6 +39,7 @@ export function useAuth() {
     login: authStore.login,
     register: authStore.register,
     logout: authStore.logout,
+    loadUserProfile: authStore.loadUserProfile,
     updateProfile: authStore.updateProfile,
     deleteAccount: authStore.deleteAccount,
     clearError: authStore.clearError,
@@ -47,38 +49,8 @@ export function useAuth() {
 
 // Composable específico para contatos
 export function useContacts() {
-  const contactsStore = useContactsStore()
-
-  return {
-    // State
-    contacts: contactsStore.contacts,
-    favorites: contactsStore.favorites,
-    currentContact: contactsStore.currentContact,
-    isLoading: contactsStore.isLoading,
-    isLoadingFavorites: contactsStore.isLoadingFavorites,
-    error: contactsStore.error,
-    pagination: contactsStore.pagination,
-    searchTerm: contactsStore.searchTerm,
-    orderBy: contactsStore.orderBy,
-    orderDesc: contactsStore.orderDesc,
-
-    // Getters
-    totalContacts: contactsStore.totalContacts,
-    activeContacts: contactsStore.activeContacts,
-    favoriteContacts: contactsStore.favoriteContacts,
-
-    // Actions
-    fetchContacts: contactsStore.fetchContacts,
-    fetchFavorites: contactsStore.fetchFavorites,
-    fetchContactById: contactsStore.fetchContactById,
-    createContact: contactsStore.createContact,
-    updateContact: contactsStore.updateContact,
-    deleteContact: contactsStore.deleteContact,
-    toggleFavorite: contactsStore.toggleFavorite,
-    toggleStatus: contactsStore.toggleStatus,
-    clearError: contactsStore.clearError,
-    setCurrentContact: contactsStore.setCurrentContact
-  }
+  // Retornar o store diretamente para manter a reatividade
+  return useContactsStore()
 }
 
 // Composable específico para usuários
