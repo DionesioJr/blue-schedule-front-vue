@@ -1,14 +1,18 @@
 <template>
   <div
-    class="bg-white rounded-2xl p-8 border border-surface-200 hover:border-primary-200 transition-all duration-200 hover:shadow-lg group"
+    class="bg-white p-10 border border-gray-100 hover:border-gray-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
   >
     <div
-      :class="`w-14 h-14 bg-gradient-to-r ${iconColor} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200`"
+      class="w-16 h-16 bg-primary-600 flex items-center justify-center mb-8 group-hover:bg-primary-700 transition-all duration-300"
     >
-      <i :class="`pi ${icon} text-white text-xl`"></i>
+      <i :class="`pi ${icon} text-white text-2xl`"></i>
     </div>
-    <h3 class="text-xl font-bold text-surface-900 mb-3">{{ title }}</h3>
-    <p class="text-surface-600 leading-relaxed">
+    <h3
+      class="text-2xl font-normal text-slate-900 mb-4 font-display leading-tight"
+    >
+      {{ title }}
+    </h3>
+    <p class="text-slate-600 leading-relaxed font-light text-lg">
       {{ description }}
     </p>
   </div>

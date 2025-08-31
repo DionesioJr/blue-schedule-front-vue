@@ -175,7 +175,6 @@ onUnmounted(() => {
 // Carregar o perfil do usuário apenas quando a página é atualizada (F5)
 onMounted(async () => {
   try {
-
     // Verificar se há um perfil em cache primeiro
     const cachedProfile = usersService.getCachedProfile()
     if (cachedProfile) {

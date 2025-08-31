@@ -135,7 +135,7 @@
         <!-- Back to Home -->
         <div class="mt-6 text-center">
           <router-link
-            to="/"
+            to="/home"
             class="inline-flex items-center text-surface-500 hover:text-primary-600 transition-colors"
           >
             <i class="pi pi-arrow-left mr-2"></i>

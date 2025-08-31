@@ -250,11 +250,9 @@ const updatePersonalInfo = async () => {
     // Atualizar userProfile local com a resposta da API
     userProfile.value.name = updatedProfile.name || formData.name
     userProfile.value.email = updatedProfile.email || formData.email
-    
+
     // Atualizar o auth store para que o header seja atualizado
     await authStore.loadUserProfile()
-
-    
   } catch (error) {
     console.error('Erro ao atualizar perfil:', error)
     toast.add({
@@ -285,7 +283,7 @@ const onPhotoSelect = (event: any) => {
         await updatePersonalInfo()
 
         showPhotoUpload.value = false
-        
+
         toast.add({
           severity: 'success',
           summary: 'Foto atualizada',
@@ -356,4 +354,3 @@ const removePhoto = () => {
   })
 }
 </script>
- 

@@ -1,17 +1,31 @@
 <template>
-  <div id="funcionalidades" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-bold text-surface-900 mb-4">
-          Funcionalidades Premium
+  <div id="funcionalidades" class="py-24 lg:py-32 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="text-center mb-20">
+        <div class="mb-6">
+          <span
+            class="inline-block px-4 py-2 bg-primary-100 text-primary-700 text-sm font-medium rounded-full tracking-wide"
+          >
+            FUNCIONALIDADES
+          </span>
+        </div>
+        <h2
+          class="text-4xl lg:text-5xl font-normal text-slate-900 mb-6 font-display tracking-tight leading-tight"
+        >
+          Ferramentas
+          <span class="block text-primary-600 font-semibold">Premium</span>
         </h2>
-        <p class="text-xl text-surface-600 max-w-2xl mx-auto">
-          Todas as ferramentas que você precisa para gerenciar seus contatos de
-          forma profissional
+        <p
+          class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-light"
+        >
+          Todas as funcionalidades que você precisa para gerenciar seus contatos
+          de forma inteligente e profissional
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12"
+      >
         <FeatureCard
           icon="pi-users"
           icon-color="from-blue-500 to-blue-600"
